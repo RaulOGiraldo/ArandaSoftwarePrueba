@@ -1,9 +1,12 @@
 ﻿using ArandaApi.Responses;
+using Bisiness.CustomEntities;
 using Bisiness.DTOs;
 using Bisiness.interfaces;
 using Bisiness.QueryFilters;
 using Data.Entities;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -20,10 +23,29 @@ namespace ArandaApi.Controllers
 
         // GET: api/Producto
         [HttpGet]
-        public async Task<IHttpActionResult> GetAll([FromBody] ProductoQueryFilter filters)
+        public async Task<IHttpActionResult> GetAll([FromBody] ProductoQueryFilter filters, HttpRequestMessage Response)
         {
             var productos = await _productoService.GelAll(filters);
-            var response = new ApiResponse<IEnumerable<ProductoDTO>>(productos);
+            var metadata = new Metadata
+            {
+                TotalCount = productos.TotalCount,
+                PageSize = productos.PageSize,
+                CurrentPage = productos.CurrentPage,
+                TotalPages = productos.TotalPages,
+                HasNextPage = productos.HasNextPage,
+                HasPreviousPage = productos.HasPreviousPage
+            };
+
+
+            var response = new ApiResponse<IEnumerable<ProductoDTO>>(productos) { Meta = metadata };
+
+            //JsonSerializerSettings options = new
+            //{
+            //    DefaultIgnoreCondition =  WhenWritingNull
+            //};
+
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

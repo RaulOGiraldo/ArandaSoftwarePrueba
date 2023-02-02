@@ -1,4 +1,6 @@
-﻿namespace ArandaApi.Responses
+﻿using Bisiness.CustomEntities;
+
+namespace ArandaApi.Responses
 {
     public class ApiResponse<T>
     {
@@ -7,5 +9,6 @@
                 Data = data;
             }
             public T Data { get; set; }
+            public Metadata Meta { get; set; }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Bisiness.DTOs;
+﻿using Bisiness.CustomEntities;
+using Bisiness.DTOs;
 using Bisiness.interfaces;
 using Bisiness.QueryFilters;
 using Data.Entities;
 using Data.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +18,7 @@ namespace Bisiness.Services
             _productoRepository = productoRepository;
         }
 
-        public async Task<IEnumerable<ProductoDTO>> GelAll(ProductoQueryFilter filters)
+        public async Task<PageList<ProductoDTO>> GelAll(ProductoQueryFilter filters)
         {
             bool ordenar = false;
 
@@ -75,7 +75,10 @@ namespace Bisiness.Services
                     Imagen = x.Imagen
                 });
 
-            return listaDto;
+            // Paginación del listado de Productos
+            var pagedProductos = PageList<ProductoDTO>.Create(listaDto, filters.PageNumber, filters.PageSize);
+
+            return pagedProductos;
         }
 
         public async Task<Producto> Get(int Id)
